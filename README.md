@@ -48,12 +48,12 @@ A full-stack property management system built with React (Vite) frontend and Nod
 ### Backend Setup
 
 1. Navigate to the server directory:
-\`\`\`bash
+\`\`\`
 cd server
 \`\`\`
 
 2. Install dependencies:
-\`\`\`bash
+\`\`\`
 npm install
 \`\`\`
 
@@ -63,7 +63,7 @@ CREATE DATABASE property_management;
 \`\`\`
 
 4. Copy the environment file and configure:
-\`\`\`bash
+\`\`\`
 cp .env.example .env
 \`\`\`
 
@@ -77,12 +77,12 @@ PORT=5000
 \`\`\`
 
 6. Initialize the database:
-\`\`\`bash
+\`\`\`
 npm run init-db
 \`\`\`
 
 7. Start the server:
-\`\`\`bash
+\`\`\`
 npm run dev
 \`\`\`
 
@@ -91,17 +91,17 @@ The backend will be running on `http://localhost:5000`
 ### Frontend Setup
 
 1. Navigate to the client directory:
-\`\`\`bash
+\`\`\`
 cd client
 \`\`\`
 
 2. Install dependencies:
-\`\`\`bash
+\`\`\`
 npm install
 \`\`\`
 
 3. Create environment file:
-\`\`\`bash
+\`\`\`
 cp .env.example .env
 \`\`\`
 
@@ -111,11 +111,11 @@ VITE_API_URL=http://localhost:5000/api
 \`\`\`
 
 5. Start the development server:
-\`\`\`bash
+\`\`\`
 npm run dev
 \`\`\`
 
-The frontend will be running on `http://localhost:3000`
+The frontend will be running on `http://localhost:5173`
 
 ## Database Schema
 
@@ -216,13 +216,13 @@ The frontend will be running on `http://localhost:3000`
 ### Running in Development Mode
 
 Backend:
-\`\`\`bash
+\`\`\`
 cd server
 npm run dev
 \`\`\`
 
 Frontend:
-\`\`\`bash
+\`\`\`
 cd client
 npm run dev
 \`\`\`
@@ -230,25 +230,14 @@ npm run dev
 ### Building for Production
 
 Frontend:
-\`\`\`bash
+\`\`\`
 cd client
 npm run build
 \`\`\`
 
 Backend:
-\`\`\`bash
+\`\`\`
 cd server
 npm start
 \`\`\`
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
