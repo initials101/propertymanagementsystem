@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { paymentsAPI, tenantsAPI, leasesAPI } from "../services/api"
+import CurrencyInput from "./CurrencyInput"
 import toast from "react-hot-toast"
 
 const paymentMethods = [
@@ -10,6 +11,7 @@ const paymentMethods = [
   { value: "check", label: "Check" },
   { value: "bank_transfer", label: "Bank Transfer" },
   { value: "credit_card", label: "Credit Card" },
+  { value: "mobile_money", label: "Mobile Money (M-Pesa)" },
 ]
 
 const paymentTypes = [
@@ -32,7 +34,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
     lease_id: "",
     amount: "",
     payment_date: new Date().toISOString().split("T")[0],
-    payment_method: "bank_transfer",
+    payment_method: "mobile_money",
     payment_type: "rent",
     description: "",
     status: "completed",
@@ -55,7 +57,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
         lease_id: payment.lease_id || "",
         amount: payment.amount || "",
         payment_date: payment.payment_date ? payment.payment_date.split("T")[0] : "",
-        payment_method: payment.payment_method || "bank_transfer",
+        payment_method: payment.payment_method || "mobile_money",
         payment_type: payment.payment_type || "rent",
         description: payment.description || "",
         status: payment.status || "completed",
@@ -66,7 +68,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
         lease_id: "",
         amount: "",
         payment_date: new Date().toISOString().split("T")[0],
-        payment_method: "bank_transfer",
+        payment_method: "mobile_money",
         payment_type: "rent",
         description: "",
         status: "completed",
@@ -139,6 +141,13 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
     })
   }
 
+  const handleAmountChange = (amount) => {
+    setFormData({
+      ...formData,
+      amount: amount,
+    })
+  }
+
   const getFilteredLeases = () => {
     return leases.filter((lease) => lease.tenant_id === Number.parseInt(formData.tenant_id))
   }
@@ -190,7 +199,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
                     <option value="">Select a lease</option>
                     {getFilteredLeases().map((lease) => (
                       <option key={lease.id} value={lease.id}>
-                        {lease.unit_number} - ${Number.parseFloat(lease.rent_amount).toFixed(2)}/month
+                        {lease.unit_number} - KES {Number.parseFloat(lease.rent_amount).toLocaleString()}/month
                       </option>
                     ))}
                   </select>
@@ -199,17 +208,13 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Amount *</label>
-                  <input
-                    type="number"
-                    name="amount"
+                  <label className="block text-sm font-medium text-gray-700">Amount (KES) *</label>
+                  <CurrencyInput
                     value={formData.amount}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    step="0.01"
-                    className="input mt-1"
+                    onChange={handleAmountChange}
                     placeholder="0.00"
+                    className="mt-1"
+                    required
                   />
                 </div>
 
@@ -279,7 +284,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
                   onChange={handleChange}
                   rows={3}
                   className="input mt-1"
-                  placeholder="Enter payment description"
+                  placeholder="Enter payment description (e.g., M-Pesa transaction ID)"
                 />
               </div>
 

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { leasesAPI, tenantsAPI, unitsAPI } from "../services/api"
+import CurrencyInput from "./CurrencyInput"
+import { formatKES } from "../utils/currency"
 import toast from "react-hot-toast"
 
 export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
@@ -129,6 +131,20 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
     })
   }
 
+  const handleRentAmountChange = (amount) => {
+    setFormData({
+      ...formData,
+      rent_amount: amount,
+    })
+  }
+
+  const handleSecurityDepositChange = (amount) => {
+    setFormData({
+      ...formData,
+      security_deposit: amount,
+    })
+  }
+
   if (!isOpen) return null
 
   return (
@@ -182,8 +198,7 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
                     <option value="">Select a unit</option>
                     {units.map((unit) => (
                       <option key={unit.id} value={unit.id}>
-                        {unit.unit_number} - {unit.type.replace("_", " ")} ($
-                        {Number.parseFloat(unit.rent_amount).toFixed(2)})
+                        {unit.unit_number} - {unit.type.replace("_", " ")} ({formatKES(unit.rent_amount)})
                       </option>
                     ))}
                   </select>
@@ -218,31 +233,23 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Rent Amount *</label>
-                  <input
-                    type="number"
-                    name="rent_amount"
+                  <label className="block text-sm font-medium text-gray-700">Rent Amount (KES) *</label>
+                  <CurrencyInput
                     value={formData.rent_amount}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    step="0.01"
-                    className="input mt-1"
+                    onChange={handleRentAmountChange}
                     placeholder="0.00"
+                    className="mt-1"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Security Deposit</label>
-                  <input
-                    type="number"
-                    name="security_deposit"
+                  <label className="block text-sm font-medium text-gray-700">Security Deposit (KES)</label>
+                  <CurrencyInput
                     value={formData.security_deposit}
-                    onChange={handleChange}
-                    min="0"
-                    step="0.01"
-                    className="input mt-1"
+                    onChange={handleSecurityDepositChange}
                     placeholder="0.00"
+                    className="mt-1"
                   />
                 </div>
               </div>

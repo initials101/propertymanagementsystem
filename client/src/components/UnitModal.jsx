@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { unitsAPI } from "../services/api"
+import CurrencyInput from "./CurrencyInput"
 import toast from "react-hot-toast"
 
 const unitTypes = [
@@ -90,6 +91,13 @@ export default function UnitModal({ isOpen, onClose, onSuccess, unit }) {
     })
   }
 
+  const handleRentAmountChange = (amount) => {
+    setFormData({
+      ...formData,
+      rent_amount: amount,
+    })
+  }
+
   if (!isOpen) return null
 
   return (
@@ -131,17 +139,13 @@ export default function UnitModal({ isOpen, onClose, onSuccess, unit }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Rent Amount *</label>
-              <input
-                type="number"
-                name="rent_amount"
+              <label className="block text-sm font-medium text-gray-700">Rent Amount (KES) *</label>
+              <CurrencyInput
                 value={formData.rent_amount}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="input mt-1"
+                onChange={handleRentAmountChange}
                 placeholder="0.00"
+                className="mt-1"
+                required
               />
             </div>
 

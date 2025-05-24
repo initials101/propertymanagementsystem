@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Users, Building, DollarSign, AlertTriangle, TrendingUp, Calendar } from "lucide-react"
 import { tenantsAPI, unitsAPI, paymentsAPI, leasesAPI } from "../services/api"
+import { formatKES } from "../utils/currency"
 import toast from "react-hot-toast"
 
 export default function Dashboard() {
@@ -133,7 +134,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Monthly Revenue"
-          value={`Ksh${stats.monthlyRevenue.toLocaleString()}`}
+          value={formatKES(stats.monthlyRevenue)}
           icon={DollarSign}
           color="text-green-600"
           link="/payments"
@@ -189,9 +190,7 @@ export default function Dashboard() {
                         {payment.unit_number} • {new Date(payment.payment_date).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="text-sm font-medium text-green-600">
-                      ${Number.parseFloat(payment.amount).toFixed(2)}
-                    </div>
+                    <div className="text-sm font-medium text-green-600">{formatKES(payment.amount)}</div>
                   </div>
                 ))}
                 <div className="pt-4">
