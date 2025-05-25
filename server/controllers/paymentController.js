@@ -185,7 +185,7 @@ export const updatePayment = async (req, res) => {
         amount = ?, 
         payment_date = ?, 
         payment_method = ?, 
-        reference_number = ?,
+        reference_numbe2r = ?,
         description = ?,
         status = ?,
         lease_id = ?

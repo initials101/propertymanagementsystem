@@ -78,43 +78,34 @@ PORT=5000
 
 6. Initialize the database:
 \`\`\`
-npm run init-db
+npm run initDatabase
 \`\`\`
 
 7. Start the server:
-\`\`\`
+```
 npm run dev
-\`\`\`
-
+```
 The backend will be running on `http://localhost:5000`
 
 ### Frontend Setup
 
 1. Navigate to the client directory:
-\`\`\`
-cd client
-\`\`\`
-
+```cd client
+```
 2. Install dependencies:
-\`\`\`
-npm install
-\`\`\`
-
+```npm install
+```
 3. Create environment file:
-\`\`\`
-cp .env.example .env
-\`\`\`
-
+```cp .env.example .env
+```
 4. Update the `.env` file:
-\`\`\`env
+```env
 VITE_API_URL=http://localhost:5000/api
-\`\`\`
-
+```
 5. Start the development server:
-\`\`\`
+```
 npm run dev
-\`\`\`
-
+```
 The frontend will be running on `http://localhost:5173`
 
 ## Database Schema
@@ -216,28 +207,22 @@ The frontend will be running on `http://localhost:5173`
 ### Running in Development Mode
 
 Backend:
-\`\`\`
+```
 cd server
 npm run dev
-\`\`\`
-
+```
 Frontend:
-\`\`\`
-cd client
+```cd client
 npm run dev
-\`\`\`
-
+```
 ### Building for Production
 
 Frontend:
-\`\`\`
-cd client
+```cd client
 npm run build
-\`\`\`
-
+```
 Backend:
-\`\`\`
+```
 cd server
 npm start
-\`\`\`
-
+```
