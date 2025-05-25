@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Download, FileText, DollarSign, Building, AlertTriangle } from "lucide-react"
 import { reportsAPI, paymentsAPI } from "../services/api"
+import { formatKSh } from "../utils/currency"
 import toast from "react-hot-toast"
 
 export default function Reports() {
@@ -210,11 +211,11 @@ export default function Reports() {
                     <td className="table-cell">{item.unit_number}</td>
                     <td className="table-cell">{item.email}</td>
                     <td className="table-cell">{item.phone || "N/A"}</td>
-                    <td className="table-cell">${Number.parseFloat(item.rent_amount).toFixed(2)}</td>
-                    <td className="table-cell">${Number.parseFloat(item.total_paid).toFixed(2)}</td>
-                    <td className="table-cell">${Number.parseFloat(item.expected_amount).toFixed(2)}</td>
+                    <td className="table-cell">{formatKSh(item.rent_amount)}</td>
+                    <td className="table-cell">{formatKSh(item.total_paid)}</td>
+                    <td className="table-cell">{formatKSh(item.expected_amount)}</td>
                     <td className="table-cell">
-                      <span className="text-red-600 font-medium">${Number.parseFloat(item.arrears).toFixed(2)}</span>
+                      <span className="text-red-600 font-medium">{formatKSh(item.arrears)}</span>
                     </td>
                   </tr>
                 ))}
@@ -225,7 +226,7 @@ export default function Reports() {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-500">Total arrears: {arrears.length} tenant(s)</span>
               <span className="text-lg font-medium text-red-600">
-                Total Amount: ${arrears.reduce((sum, item) => sum + Number.parseFloat(item.arrears), 0).toFixed(2)}
+                Total Amount: {formatKSh(arrears.reduce((sum, item) => sum + Number.parseFloat(item.arrears), 0))}
               </span>
             </div>
           </div>

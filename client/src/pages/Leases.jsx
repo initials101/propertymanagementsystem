@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Plus, Edit, Trash2, FileText, AlertTriangle } from "lucide-react"
 import { leasesAPI } from "../services/api"
+import { formatKSh } from "../utils/currency"
 import LeaseModal from "../components/LeaseModal"
 import toast from "react-hot-toast"
 
@@ -182,7 +183,9 @@ export default function Leases() {
                     </td>
                     <td className="table-cell">{new Date(lease.start_date).toLocaleDateString()}</td>
                     <td className="table-cell">{new Date(lease.end_date).toLocaleDateString()}</td>
-                    <td className="table-cell">${Number.parseFloat(lease.rent_amount).toFixed(2)}</td>
+                    <td className="table-cell">
+                      <span className="font-medium">{formatKSh(lease.rent_amount)}</span>
+                    </td>
                     <td className="table-cell">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[lease.status]}`}

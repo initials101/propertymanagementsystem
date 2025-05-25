@@ -139,7 +139,7 @@ export default function UnitModal({ isOpen, onClose, onSuccess, unit }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Rent Amount (KES) *</label>
+              <label className="block text-sm font-medium text-gray-700">Rent Amount (KSh) *</label>
               <CurrencyInput
                 value={formData.rent_amount}
                 onChange={handleRentAmountChange}

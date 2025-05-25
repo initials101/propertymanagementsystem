@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Plus, Edit, Trash2, Building, Users } from "lucide-react"
 import { unitsAPI } from "../services/api"
+import { formatKSh } from "../utils/currency"
 import UnitModal from "../components/UnitModal"
 import toast from "react-hot-toast"
 
@@ -219,7 +220,7 @@ export default function Units() {
                 <span className="font-medium">Type:</span> {typeLabels[unit.type]}
               </p>
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Rent:</span> ${Number.parseFloat(unit.rent_amount).toFixed(2)}/month
+                <span className="font-medium">Rent:</span> {formatKSh(unit.rent_amount)}/month
               </p>
               {unit.tenant_name && (
                 <p className="text-sm text-gray-600">

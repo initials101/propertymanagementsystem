@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Plus, Edit, Trash2, DollarSign, Search } from "lucide-react"
 import { paymentsAPI } from "../services/api"
+import { formatKSh, formatKShCompact } from "../utils/currency"
 import PaymentModal from "../components/PaymentModal"
 import toast from "react-hot-toast"
 
@@ -162,7 +163,7 @@ export default function Payments() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-green-600">${totalAmount.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-green-600">{formatKShCompact(totalAmount)}</p>
             <p className="text-sm text-gray-500">Total Amount</p>
           </div>
         </div>
@@ -196,7 +197,7 @@ export default function Payments() {
                   </td>
                   <td className="table-cell">{payment.unit_number || "N/A"}</td>
                   <td className="table-cell">
-                    <span className="font-medium text-green-600">${Number.parseFloat(payment.amount).toFixed(2)}</span>
+                    <span className="font-medium text-green-600">{formatKSh(payment.amount)}</span>
                   </td>
                   <td className="table-cell">
                     <span

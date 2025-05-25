@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { paymentsAPI, tenantsAPI, leasesAPI } from "../services/api"
 import CurrencyInput from "./CurrencyInput"
+import { formatKSh } from "../utils/currency"
 import toast from "react-hot-toast"
 
 const paymentMethods = [
@@ -199,7 +200,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
                     <option value="">Select a lease</option>
                     {getFilteredLeases().map((lease) => (
                       <option key={lease.id} value={lease.id}>
-                        {lease.unit_number} - KES {Number.parseFloat(lease.rent_amount).toLocaleString()}/month
+                        {lease.unit_number} - {formatKSh(lease.rent_amount)}/month
                       </option>
                     ))}
                   </select>
@@ -208,7 +209,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, payment }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Amount (KES) *</label>
+                  <label className="block text-sm font-medium text-gray-700">Amount (KSh) *</label>
                   <CurrencyInput
                     value={formData.amount}
                     onChange={handleAmountChange}

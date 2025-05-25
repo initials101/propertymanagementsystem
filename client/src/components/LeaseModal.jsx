@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { leasesAPI, tenantsAPI, unitsAPI } from "../services/api"
 import CurrencyInput from "./CurrencyInput"
-import { formatKES } from "../utils/currency"
+import { formatKSh } from "../utils/currency"
 import toast from "react-hot-toast"
 
 export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
@@ -198,7 +198,7 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
                     <option value="">Select a unit</option>
                     {units.map((unit) => (
                       <option key={unit.id} value={unit.id}>
-                        {unit.unit_number} - {unit.type.replace("_", " ")} ({formatKES(unit.rent_amount)})
+                        {unit.unit_number} - {unit.type.replace("_", " ")} ({formatKSh(unit.rent_amount)})
                       </option>
                     ))}
                   </select>
@@ -233,7 +233,7 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Rent Amount (KES) *</label>
+                  <label className="block text-sm font-medium text-gray-700">Rent Amount (KSh) *</label>
                   <CurrencyInput
                     value={formData.rent_amount}
                     onChange={handleRentAmountChange}
@@ -244,7 +244,7 @@ export default function LeaseModal({ isOpen, onClose, onSuccess, lease }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Security Deposit (KES)</label>
+                  <label className="block text-sm font-medium text-gray-700">Security Deposit (KSh)</label>
                   <CurrencyInput
                     value={formData.security_deposit}
                     onChange={handleSecurityDepositChange}
