@@ -89,13 +89,16 @@ The backend will be running on `http://localhost:5000`
 ### Frontend Setup
 
 1. Navigate to the client directory:
-```cd client
+```
+cd client
 ```
 2. Install dependencies:
-```npm install
+```
+npm install
 ```
 3. Create environment file:
-```cp .env.example .env
+```
+cp .env.example .env
 ```
 4. Update the `.env` file:
 ```env
