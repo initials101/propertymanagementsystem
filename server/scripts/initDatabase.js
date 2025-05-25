@@ -50,7 +50,7 @@ const createTables = async () => {
       )
     `)
 
-    // Create payments table
+    // Create payments table with mobile_money included
     await pool.execute(`
       CREATE TABLE IF NOT EXISTS payments (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,9 +79,18 @@ const createTables = async () => {
 
 const insertSampleData = async () => {
   try {
+    // Clear existing data first (optional - remove if you want to keep existing data)
+    console.log("🧹 Clearing existing data...")
+    await pool.execute("SET FOREIGN_KEY_CHECKS = 0")
+    await pool.execute("TRUNCATE TABLE payments")
+    await pool.execute("TRUNCATE TABLE leases")
+    await pool.execute("TRUNCATE TABLE units")
+    await pool.execute("TRUNCATE TABLE tenants")
+    await pool.execute("SET FOREIGN_KEY_CHECKS = 1")
+
     // Sample tenants with Kenyan names and details
     await pool.execute(`
-      INSERT IGNORE INTO tenants (name, email, phone, address, emergency_contact, emergency_phone) VALUES
+      INSERT INTO tenants (name, email, phone, address, emergency_contact, emergency_phone) VALUES
       ('John Kamau Mwangi', 'john.kamau@gmail.com', '+254712345678', 'Kileleshwa, Nairobi', 'Mary Kamau', '+254723456789'),
       ('Grace Wanjiku Njeri', 'grace.wanjiku@yahoo.com', '+254734567890', 'Westlands, Nairobi', 'Peter Njeri', '+254745678901'),
       ('Michael Otieno Ochieng', 'mike.otieno@gmail.com', '+254756789012', 'Karen, Nairobi', 'Sarah Otieno', '+254767890123'),
@@ -94,7 +103,7 @@ const insertSampleData = async () => {
 
     // Sample units with Kenyan rental prices (in KES)
     await pool.execute(`
-      INSERT IGNORE INTO units (unit_number, type, rent_amount, status, description) VALUES
+      INSERT INTO units (unit_number, type, rent_amount, status, description) VALUES
       ('A101', 'one_bedroom', 28000.00, 'occupied', 'Modern 1BR apartment with balcony in Kileleshwa'),
       ('A102', 'one_bedroom', 28000.00, 'vacant', 'Newly renovated 1BR unit with modern fixtures'),
       ('A103', 'one_bedroom', 25000.00, 'occupied', 'Cozy 1BR apartment with garden view'),
@@ -111,7 +120,7 @@ const insertSampleData = async () => {
 
     // Sample leases with realistic Kenyan terms
     await pool.execute(`
-      INSERT IGNORE INTO leases (tenant_id, unit_id, start_date, end_date, rent_amount, security_deposit, lease_terms, status) VALUES
+      INSERT INTO leases (tenant_id, unit_id, start_date, end_date, rent_amount, security_deposit, lease_terms, status) VALUES
       (1, 1, '2024-01-01', '2024-12-31', 28000.00, 56000.00, '12-month lease agreement. Rent payable monthly in advance. Security deposit equivalent to 2 months rent.', 'active'),
       (3, 4, '2024-02-01', '2025-01-31', 45000.00, 90000.00, '12-month lease agreement with option to renew. Includes water and garbage collection.', 'active'),
       (5, 9, '2023-12-01', '2024-11-30', 65000.00, 130000.00, '12-month lease for luxury apartment. Tenant responsible for electricity and internet.', 'active'),
@@ -122,51 +131,51 @@ const insertSampleData = async () => {
 
     // Sample payments with Kenyan payment methods and realistic amounts
     await pool.execute(`
-      INSERT IGNORE INTO payments (tenant_id, lease_id, amount, payment_date, payment_method, payment_type, description) VALUES
+      INSERT INTO payments (tenant_id, lease_id, amount, payment_date, payment_method, payment_type, description, status) VALUES
       -- John Kamau payments (Unit A101 - KES 28,000)
-      (1, 1, 28000.00, '2024-01-01', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA12345678'),
-      (1, 1, 28000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA23456789'),
-      (1, 1, 28000.00, '2024-03-01', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA34567890'),
-      (1, 1, 28000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment via M-Pesa - Transaction ID: QA45678901'),
-      (1, 1, 56000.00, '2024-01-01', 'bank_transfer', 'deposit', 'Security deposit payment - 2 months rent'),
+      (1, 1, 28000.00, '2024-01-01', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA12345678', 'completed'),
+      (1, 1, 28000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA23456789', 'completed'),
+      (1, 1, 28000.00, '2024-03-01', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA34567890', 'completed'),
+      (1, 1, 28000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment via M-Pesa - Transaction ID: QA45678901', 'completed'),
+      (1, 1, 56000.00, '2024-01-01', 'bank_transfer', 'deposit', 'Security deposit payment - 2 months rent', 'completed'),
       
       -- Michael Otieno payments (Unit B201 - KES 45,000)
-      (3, 2, 45000.00, '2024-02-01', 'bank_transfer', 'rent', 'February rent payment via bank transfer'),
-      (3, 2, 45000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment via bank transfer'),
-      (3, 2, 45000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment via M-Pesa - Transaction ID: QA56789012'),
-      (3, 2, 90000.00, '2024-02-01', 'bank_transfer', 'deposit', 'Security deposit - 2 months rent'),
+      (3, 2, 45000.00, '2024-02-01', 'bank_transfer', 'rent', 'February rent payment via bank transfer', 'completed'),
+      (3, 2, 45000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment via bank transfer', 'completed'),
+      (3, 2, 45000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment via M-Pesa - Transaction ID: QA56789012', 'completed'),
+      (3, 2, 90000.00, '2024-02-01', 'bank_transfer', 'deposit', 'Security deposit - 2 months rent', 'completed'),
       
       -- David Kipchoge payments (Unit D401 - KES 65,000)
-      (5, 3, 65000.00, '2023-12-01', 'bank_transfer', 'rent', 'December rent payment'),
-      (5, 3, 65000.00, '2024-01-01', 'bank_transfer', 'rent', 'January rent payment'),
-      (5, 3, 65000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA67890123'),
-      (5, 3, 65000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment'),
-      (5, 3, 130000.00, '2023-12-01', 'bank_transfer', 'deposit', 'Security deposit payment'),
+      (5, 3, 65000.00, '2023-12-01', 'bank_transfer', 'rent', 'December rent payment', 'completed'),
+      (5, 3, 65000.00, '2024-01-01', 'bank_transfer', 'rent', 'January rent payment', 'completed'),
+      (5, 3, 65000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA67890123', 'completed'),
+      (5, 3, 65000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment', 'completed'),
+      (5, 3, 130000.00, '2023-12-01', 'bank_transfer', 'deposit', 'Security deposit payment', 'completed'),
       
       -- Robert Maina payments (Unit E501 - KES 120,000)
-      (7, 4, 120000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment for house'),
-      (7, 4, 120000.00, '2024-04-01', 'bank_transfer', 'rent', 'April rent payment for house'),
-      (7, 4, 240000.00, '2024-03-01', 'bank_transfer', 'deposit', 'Security deposit for house - 2 months rent'),
+      (7, 4, 120000.00, '2024-03-01', 'bank_transfer', 'rent', 'March rent payment for house', 'completed'),
+      (7, 4, 120000.00, '2024-04-01', 'bank_transfer', 'rent', 'April rent payment for house', 'completed'),
+      (7, 4, 240000.00, '2024-03-01', 'bank_transfer', 'deposit', 'Security deposit for house - 2 months rent', 'completed'),
       
       -- Grace Wanjiku payments (Unit C302 - KES 20,000)
-      (2, 5, 20000.00, '2024-01-15', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA78901234'),
-      (2, 5, 20000.00, '2024-02-15', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA89012345'),
-      (2, 5, 20000.00, '2024-03-15', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA90123456'),
-      (2, 5, 40000.00, '2024-01-15', 'mobile_money', 'deposit', 'Security deposit via M-Pesa - Transaction ID: QA01234567'),
+      (2, 5, 20000.00, '2024-01-15', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA78901234', 'completed'),
+      (2, 5, 20000.00, '2024-02-15', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA89012345', 'completed'),
+      (2, 5, 20000.00, '2024-03-15', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA90123456', 'completed'),
+      (2, 5, 40000.00, '2024-01-15', 'mobile_money', 'deposit', 'Security deposit via M-Pesa - Transaction ID: QA01234567', 'completed'),
       
       -- Faith Akinyi payments (Unit A103 - KES 25,000)
-      (4, 6, 25000.00, '2023-11-01', 'mobile_money', 'rent', 'November rent payment via M-Pesa'),
-      (4, 6, 25000.00, '2023-12-01', 'mobile_money', 'rent', 'December rent payment via M-Pesa'),
-      (4, 6, 25000.00, '2024-01-01', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA12345679'),
-      (4, 6, 25000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA23456780'),
-      (4, 6, 25000.00, '2024-03-01', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA34567891'),
-      (4, 6, 50000.00, '2023-11-01', 'mobile_money', 'deposit', 'Security deposit payment'),
+      (4, 6, 25000.00, '2023-11-01', 'mobile_money', 'rent', 'November rent payment via M-Pesa', 'completed'),
+      (4, 6, 25000.00, '2023-12-01', 'mobile_money', 'rent', 'December rent payment via M-Pesa', 'completed'),
+      (4, 6, 25000.00, '2024-01-01', 'mobile_money', 'rent', 'January rent payment via M-Pesa - Transaction ID: QA12345679', 'completed'),
+      (4, 6, 25000.00, '2024-02-01', 'mobile_money', 'rent', 'February rent payment via M-Pesa - Transaction ID: QA23456780', 'completed'),
+      (4, 6, 25000.00, '2024-03-01', 'mobile_money', 'rent', 'March rent payment via M-Pesa - Transaction ID: QA34567891', 'completed'),
+      (4, 6, 50000.00, '2023-11-01', 'mobile_money', 'deposit', 'Security deposit payment', 'completed'),
       
       -- Some maintenance and other payments
-      (1, 1, 2500.00, '2024-02-15', 'mobile_money', 'maintenance', 'Plumbing repair contribution'),
-      (3, 2, 5000.00, '2024-03-10', 'cash', 'late_fee', 'Late payment fee for March rent'),
-      (5, 3, 3000.00, '2024-01-20', 'mobile_money', 'other', 'Parking fee for additional vehicle'),
-      (7, 4, 8000.00, '2024-03-25', 'bank_transfer', 'maintenance', 'Garden maintenance and landscaping'),
+      (1, 1, 2500.00, '2024-02-15', 'mobile_money', 'maintenance', 'Plumbing repair contribution', 'completed'),
+      (3, 2, 5000.00, '2024-03-10', 'cash', 'late_fee', 'Late payment fee for March rent', 'completed'),
+      (5, 3, 3000.00, '2024-01-20', 'mobile_money', 'other', 'Parking fee for additional vehicle', 'completed'),
+      (7, 4, 8000.00, '2024-03-25', 'bank_transfer', 'maintenance', 'Garden maintenance and landscaping', 'completed'),
       
       -- Some pending payments to show arrears
       (6, NULL, 18000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment - PENDING', 'pending'),
@@ -216,10 +225,9 @@ const displayDataSummary = async () => {
     // Count payments and total amount
     const [paymentStats] = await pool.execute(`
       SELECT 
-        COUNT(*) as total_payments,
-        SUM(amount) as total_amount,
         payment_method,
-        COUNT(*) as method_count
+        COUNT(*) as method_count,
+        SUM(amount) as method_total
       FROM payments 
       GROUP BY payment_method
     `)
@@ -237,7 +245,9 @@ const displayDataSummary = async () => {
     )
     console.log("   By method:")
     paymentStats.forEach((stat) => {
-      console.log(`   ${stat.payment_method}: ${stat.method_count} payments`)
+      console.log(
+        `   ${stat.payment_method}: ${stat.method_count} payments (KES ${Number(stat.method_total).toLocaleString()})`,
+      )
     })
 
     // Show rent range
