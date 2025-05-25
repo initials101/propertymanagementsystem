@@ -48,25 +48,18 @@ A full-stack property management system built with React (Vite) frontend and Nod
 ### Backend Setup
 
 1. Navigate to the server directory:
-\`\`\`
-cd server
-\`\`\`
-
+```cd server
+```
 2. Install dependencies:
-\`\`\`
-npm install
-\`\`\`
-
+```npm install
+```
 3. Create a MySQL database:
 \`\`\`sql
 CREATE DATABASE property_management;
-\`\`\`
-
+```
 4. Copy the environment file and configure:
-\`\`\`
-cp .env.example .env
-\`\`\`
-
+```cp .env.example .env
+```
 5. Update the `.env` file with your database credentials:
 \`\`\`env
 DB_HOST=localhost
@@ -74,13 +67,10 @@ DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=property_management
 PORT=5000
-\`\`\`
-
+```
 6. Initialize the database:
-\`\`\`
-npm run initDatabase
-\`\`\`
-
+```npm run initDatabase
+```
 7. Start the server:
 ```
 npm run dev
