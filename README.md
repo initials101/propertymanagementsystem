@@ -94,7 +94,7 @@ cd client
 ```
 2. Install dependencies:
 ```
-npm install
+yarn
 ```
 3. Create environment file:
 ```
