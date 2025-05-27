@@ -115,7 +115,7 @@ export class Payment {
       FROM tenants t
       JOIN leases l ON t.id = l.tenant_id AND l.status = 'active'
       JOIN units u ON l.unit_id = u.id
-      LEFT JOIN payments p ON t.id = p.tenant_id AND p.payment_type = 'rent'
+      LEFT JOIN payments p ON t.id = p.tenant_id AND p.payment_type = 'rent' AND (p.lease_id = l.id OR p.lease_id IS NULL)
       GROUP BY t.id, l.id
       HAVING arrears > 0
       ORDER BY arrears DESC
