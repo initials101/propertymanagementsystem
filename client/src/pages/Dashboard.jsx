@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Users, Building, DollarSign, AlertTriangle, TrendingUp, Calendar } from "lucide-react"
-import { tenantsAPI, unitsAPI, paymentsAPI, leasesAPI } from "../services/api"
+import { Users, Building, DollarSign, AlertTriangle, TrendingUp, Calendar, FileText } from "lucide-react"
+import { tenantsAPI, unitsAPI, paymentsAPI, leasesAPI, invoicesAPI } from "../services/api"
 import { formatKSh, formatKShCompact } from "../utils/currency"
 import toast from "react-hot-toast"
 
@@ -16,6 +16,8 @@ export default function Dashboard() {
     monthlyRevenue: 0,
     pendingPayments: 0,
     expiringLeases: 0,
+    totalInvoices: 0,
+    overdueInvoices: 0,
   })
   const [recentPayments, setRecentPayments] = useState([])
   const [expiringLeases, setExpiringLeases] = useState([])
@@ -37,6 +39,8 @@ export default function Dashboard() {
         paymentsResponse,
         arrearsResponse,
         expiringLeasesResponse,
+        invoicesResponse,
+        overdueInvoicesResponse,
       ] = await Promise.all([
         tenantsAPI.getAll(),
         unitsAPI.getAll(),
@@ -44,6 +48,8 @@ export default function Dashboard() {
         paymentsAPI.getAll(),
         paymentsAPI.getArrears(),
         leasesAPI.getExpiring(30),
+        invoicesAPI.getAll(),
+        invoicesAPI.getOverdue(),
       ])
 
       const tenants = tenantsResponse.data
@@ -52,6 +58,8 @@ export default function Dashboard() {
       const payments = paymentsResponse.data
       const arrears = arrearsResponse.data
       const expiring = expiringLeasesResponse.data
+      const invoices = invoicesResponse.data
+      const overdueInvoices = overdueInvoicesResponse.data
 
       // Calculate stats
       const occupiedCount = occupancyStats.find((s) => s.status === "occupied")?.count || 0
@@ -71,6 +79,8 @@ export default function Dashboard() {
         monthlyRevenue,
         pendingPayments: arrears.length,
         expiringLeases: expiring.length,
+        totalInvoices: invoices.length,
+        overdueInvoices: overdueInvoices.length,
       })
 
       // Set recent payments (last 5)
@@ -169,6 +179,20 @@ export default function Dashboard() {
           value={`${Math.round((stats.occupiedUnits / stats.totalUnits) * 100)}%`}
           icon={TrendingUp}
           color="text-purple-600"
+        />
+        <StatCard
+          title="Total Invoices"
+          value={stats.totalInvoices}
+          icon={FileText}
+          color="text-purple-600"
+          link="/invoices"
+        />
+        <StatCard
+          title="Overdue Invoices"
+          value={stats.overdueInvoices}
+          icon={AlertTriangle}
+          color="text-red-600"
+          link="/invoices"
         />
       </div>
 

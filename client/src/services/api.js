@@ -90,4 +90,21 @@ export const reportsAPI = {
   },
 }
 
+// Invoices API
+export const invoicesAPI = {
+  getAll: (params = {}) => {
+    const query = new URLSearchParams(params).toString()
+    return api.get(`/invoices${query ? `?${query}` : ""}`)
+  },
+  getById: (id) => api.get(`/invoices/${id}`),
+  getStats: () => api.get("/invoices/stats"),
+  getOverdue: () => api.get("/invoices/overdue"),
+  generateNumber: () => api.get("/invoices/generate-number"),
+  create: (data) => api.post("/invoices", data),
+  update: (id, data) => api.put(`/invoices/${id}`, data),
+  updateStatus: (id, status) => api.patch(`/invoices/${id}/status`, { status }),
+  markAsPaid: (id, paymentId) => api.patch(`/invoices/${id}/mark-paid`, { payment_id: paymentId }),
+  delete: (id) => api.delete(`/invoices/${id}`),
+}
+
 export default api

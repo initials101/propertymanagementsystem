@@ -50,12 +50,37 @@ const createTables = async () => {
       )
     `)
 
-    // Create payments table with mobile_money included
+    // Create invoices table BEFORE payments table
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS invoices (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        invoice_number VARCHAR(50) UNIQUE NOT NULL,
+        tenant_id INT NOT NULL,
+        lease_id INT,
+        issue_date DATE NOT NULL,
+        due_date DATE NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        tax_amount DECIMAL(10, 2) DEFAULT 0,
+        total_amount DECIMAL(10, 2) NOT NULL,
+        status ENUM('draft', 'sent', 'paid', 'overdue', 'cancelled') DEFAULT 'draft',
+        description TEXT,
+        line_items JSON,
+        payment_terms VARCHAR(255) DEFAULT 'Net 30',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+        FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE SET NULL
+      )
+    `)
+
+    // Create payments table AFTER invoices table
     await pool.execute(`
       CREATE TABLE IF NOT EXISTS payments (
         id INT AUTO_INCREMENT PRIMARY KEY,
         tenant_id INT NOT NULL,
         lease_id INT,
+        invoice_id INT,
         amount DECIMAL(10, 2) NOT NULL,
         payment_date DATE NOT NULL,
         payment_method ENUM('cash', 'check', 'bank_transfer', 'credit_card', 'mobile_money') NOT NULL,
@@ -64,7 +89,8 @@ const createTables = async () => {
         status ENUM('pending', 'completed', 'failed') DEFAULT 'completed',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
-        FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE SET NULL
+        FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE SET NULL,
+        FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE SET NULL
       )
     `)
 
@@ -180,6 +206,19 @@ const insertSampleData = async () => {
       -- Some pending payments to show arrears
       (6, NULL, 18000.00, '2024-04-01', 'mobile_money', 'rent', 'April rent payment - PENDING', 'pending'),
       (8, NULL, 60000.00, '2024-04-01', 'bank_transfer', 'rent', 'April rent payment - PENDING', 'pending')
+    `)
+
+    // Sample invoices
+    await pool.execute(`
+      INSERT INTO invoices (invoice_number, tenant_id, lease_id, issue_date, due_date, amount, tax_amount, total_amount, status, description, line_items, payment_terms, notes) VALUES
+      ('INV-2024-001', 1, 1, '2024-04-01', '2024-04-05', 28000.00, 0.00, 28000.00, 'sent', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit A101", "quantity": 1, "rate": 28000.00, "amount": 28000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-002', 3, 2, '2024-04-01', '2024-04-05', 45000.00, 0.00, 45000.00, 'paid', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit B201", "quantity": 1, "rate": 45000.00, "amount": 45000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-003', 5, 3, '2024-04-01', '2024-04-05', 65000.00, 0.00, 65000.00, 'paid', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit D401", "quantity": 1, "rate": 65000.00, "amount": 65000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-004', 7, 4, '2024-04-01', '2024-04-05', 120000.00, 0.00, 120000.00, 'paid', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit E501", "quantity": 1, "rate": 120000.00, "amount": 120000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-005', 2, 5, '2024-04-01', '2024-04-05', 20000.00, 0.00, 20000.00, 'paid', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit C302", "quantity": 1, "rate": 20000.00, "amount": 20000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-006', 4, 6, '2024-04-01', '2024-04-05', 25000.00, 0.00, 25000.00, 'paid', 'April 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit A103", "quantity": 1, "rate": 25000.00, "amount": 25000.00}]}', 'Due within 5 days', 'Monthly rent for April 2024'),
+      ('INV-2024-007', 1, 1, '2024-05-01', '2024-05-05', 28000.00, 0.00, 28000.00, 'overdue', 'May 2024 Rent Invoice', '{"items": [{"description": "Monthly Rent - Unit A101", "quantity": 1, "rate": 28000.00, "amount": 28000.00}]}', 'Due within 5 days', 'Monthly rent for May 2024'),
+      ('INV-2024-008', 6, NULL, '2024-04-15', '2024-04-20', 2500.00, 0.00, 2500.00, 'sent', 'Maintenance Charge', '{"items": [{"description": "Plumbing repair contribution", "quantity": 1, "rate": 2500.00, "amount": 2500.00}]}', 'Due within 5 days', 'Plumbing repair for shared facilities')
     `)
 
     console.log("✅ Sample data inserted successfully")

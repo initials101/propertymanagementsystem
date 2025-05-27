@@ -9,6 +9,7 @@ import unitsRouter from "./routes/unit.routes.js"
 import leasesRouter from "./routes/lease.routes.js"
 import paymentsRouter from "./routes/payments.routes.js"
 import reportsRouter from "./routes/reports.routes.js"
+import invoicesRouter from "./routes/invoices.routes.js"
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.use("/api/units", unitsRouter)
 app.use("/api/leases", leasesRouter)
 app.use("/api/payments", paymentsRouter)
 app.use("/api/reports", reportsRouter)
+app.use("/api/invoices", invoicesRouter)
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
