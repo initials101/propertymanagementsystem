@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Download, FileText, DollarSign, Building, AlertTriangle } from "lucide-react"
+import { Download, FileText, DollarSign, Building, AlertTriangle } from 'lucide-react'
 import { reportsAPI, paymentsAPI } from "../services/api"
 import { formatKSh } from "../utils/currency"
 import toast from "react-hot-toast"
@@ -198,10 +198,10 @@ export default function Reports() {
                   <th className="table-head">Unit</th>
                   <th className="table-head">Email</th>
                   <th className="table-head">Phone</th>
-                  <th className="table-head">Rent Amount</th>
-                  <th className="table-head">Total Paid</th>
-                  <th className="table-head">Expected</th>
-                  <th className="table-head">Arrears</th>
+                  <th className="table-head">Monthly Rent (KSh)</th>
+                  <th className="table-head">Paid This Month (KSh)</th>
+                  <th className="table-head">Expected (KSh)</th>
+                  <th className="table-head">Outstanding (KSh)</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,11 +224,16 @@ export default function Reports() {
           </div>
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">Total arrears: {arrears.length} tenant(s)</span>
+              <span className="text-sm text-gray-500">
+                Total tenants with outstanding rent: {arrears.length}
+              </span>
               <span className="text-lg font-medium text-red-600">
-                Total Amount: {formatKSh(arrears.reduce((sum, item) => sum + Number.parseFloat(item.arrears), 0))}
+                Total Outstanding: {formatKSh(arrears.reduce((sum, item) => sum + Number.parseFloat(item.arrears), 0))}
               </span>
             </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Based on current month's rent vs payments received
+            </p>
           </div>
         </div>
       )}

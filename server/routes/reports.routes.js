@@ -123,9 +123,12 @@ router.get("/arrears/pdf", async (req, res) => {
     y += 15
 
     doc.fontSize(12).font("Helvetica-Bold")
-    doc.text(`Total Tenants with Arrears: ${arrears.length}`, 50, y)
+    doc.text(`Total Tenants with Outstanding Rent: ${arrears.length}`, 50, y)
     y += 20
     doc.text(`Total Outstanding Amount: ${formatKSh(totalArrears)}`, 50, y)
+    y += 15
+    doc.fontSize(10).font("Helvetica")
+    doc.text("Note: Arrears calculated based on current month's rent vs payments received", 50, y)
 
     doc.end()
   } catch (error) {
@@ -148,10 +151,10 @@ router.get("/arrears/excel", async (req, res) => {
       { header: "Unit Number", key: "unit_number", width: 15 },
       { header: "Email", key: "email", width: 30 },
       { header: "Phone", key: "phone", width: 15 },
-      { header: "Rent Amount (KSh)", key: "rent_amount", width: 18 },
-      { header: "Total Paid (KSh)", key: "total_paid", width: 18 },
-      { header: "Expected Amount (KSh)", key: "expected_amount", width: 20 },
-      { header: "Arrears (KSh)", key: "arrears", width: 18 },
+      { header: "Monthly Rent (KSh)", key: "rent_amount", width: 18 },
+      { header: "Paid This Month (KSh)", key: "total_paid", width: 20 },
+      { header: "Expected (KSh)", key: "expected_amount", width: 18 },
+      { header: "Outstanding (KSh)", key: "arrears", width: 18 },
     ]
 
     // Data

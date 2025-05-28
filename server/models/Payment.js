@@ -100,46 +100,32 @@ export class Payment {
   }
 
   static async getArrearsReport() {
-    const [rows] = await pool.execute(`
-      SELECT 
-        t.id,
-        t.name as tenant_name,
-        t.email,
-        t.phone,
-        u.unit_number,
-        l.rent_amount,
-        l.start_date,
-        COALESCE(SUM(CASE WHEN p.payment_type = 'rent' THEN p.amount ELSE 0 END), 0) as total_paid,
-        CASE 
-          WHEN CURDATE() < l.start_date THEN 0
-          ELSE (
-            TIMESTAMPDIFF(MONTH, l.start_date, CURDATE()) + 
-            CASE 
-              WHEN DAY(CURDATE()) >= DAY(l.start_date) THEN 1 
-              ELSE 0 
-            END
-          ) * l.rent_amount
-        END as expected_amount,
-        CASE 
-          WHEN CURDATE() < l.start_date THEN 0
-          ELSE (
-            (TIMESTAMPDIFF(MONTH, l.start_date, CURDATE()) + 
-            CASE 
-              WHEN DAY(CURDATE()) >= DAY(l.start_date) THEN 1 
-              ELSE 0 
-            END) * l.rent_amount
-          ) - COALESCE(SUM(CASE WHEN p.payment_type = 'rent' THEN p.amount ELSE 0 END), 0)
-        END as arrears
-      FROM tenants t
-      JOIN leases l ON t.id = l.tenant_id AND l.status = 'active'
-      JOIN units u ON l.unit_id = u.id
-      LEFT JOIN payments p ON t.id = p.tenant_id AND (p.lease_id = l.id OR p.lease_id IS NULL)
-      GROUP BY t.id, l.id, l.start_date, l.rent_amount
-      HAVING arrears > 0
-      ORDER BY arrears DESC
-    `)
-    return rows
-  }
+  const [rows] = await pool.execute(`
+    SELECT 
+      t.id,
+      t.name as tenant_name,
+      t.email,
+      t.phone,
+      u.unit_number,
+      l.rent_amount,
+      l.start_date,
+      l.end_date,
+      COALESCE(SUM(CASE WHEN p.payment_type = 'rent' THEN p.amount ELSE 0 END), 0) as total_paid,
+      l.rent_amount as expected_amount,
+      GREATEST(0, l.rent_amount - COALESCE(SUM(CASE WHEN p.payment_type = 'rent' THEN p.amount ELSE 0 END), 0)) as arrears
+    FROM tenants t
+    JOIN leases l ON t.id = l.tenant_id AND l.status = 'active'
+    JOIN units u ON l.unit_id = u.id
+    LEFT JOIN payments p ON t.id = p.tenant_id 
+      AND p.payment_type = 'rent' 
+      AND p.status = 'completed'
+      AND p.payment_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    GROUP BY t.id, l.id, l.rent_amount
+    HAVING arrears > 0
+    ORDER BY arrears DESC
+  `)
+  return rows
+}
 
   static async getMonthlyStats() {
     const [rows] = await pool.execute(`
